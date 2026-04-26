@@ -13,14 +13,18 @@ jobs:
       run: |
         Invoke-WebRequest -Uri "https://github.com/TsudaKageyu/minhook/releases/download/v1.3.3/minhook_133_bin.zip" -OutFile "minhook.zip"
         Expand-Archive -Path "minhook.zip" -DestinationPath "minhook" -Force
+        Get-ChildItem -Recurse minhook
 
-    - name: Find and copy MinHook files
+    - name: Copy MinHook files
       shell: powershell
       run: |
         $header = Get-ChildItem -Recurse -Filter "MinHook.h" | Select-Object -First 1
-        $lib    = Get-ChildItem -Recurse -Filter "libMinHook.x86.lib" | Select-Object -First 1
-        Write-Host "Found header: $($header.FullName)"
-        Write-Host "Found lib:    $($lib.FullName)"
+        $lib    = Get-ChildItem -Recurse minhook | Where-Object { $_.Extension -eq ".lib" -and $_.Name -match "x86" } | Select-Object -First 1
+        if (-not $lib) {
+          $lib = Get-ChildItem -Recurse minhook | Where-Object { $_.Extension -eq ".lib" } | Select-Object -First 1
+        }
+        Write-Host "Header: $($header.FullName)"
+        Write-Host "Lib:    $($lib.FullName)"
         Copy-Item $header.FullName -Destination "MinHook.h"
         Copy-Item $lib.FullName    -Destination "libMinHook.x86.lib"
 
