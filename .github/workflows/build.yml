@@ -11,12 +11,15 @@ jobs:
     - name: Download MinHook
       run: |
         curl -L https://github.com/TsudaKageyu/minhook/releases/download/v1.3.3/minhook_133_bin.zip -o minhook.zip
-        7z x minhook.zip
+        7z x minhook.zip -ominhook
+
+    - name: List MinHook contents
+      run: dir minhook /s
 
     - name: Copy MinHook files
       run: |
-        copy include\MinHook.h MinHook.h
-        copy lib\libMinHook.x86.lib libMinHook.x86.lib
+        copy minhook\include\MinHook.h MinHook.h
+        copy minhook\lib\libMinHook.x86.lib libMinHook.x86.lib
 
     - name: Build
       run: |
